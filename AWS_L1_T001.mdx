@@ -1,0 +1,73 @@
+# Lab 001: Create Security Group
+
+------------------------------
+
+Start: 2024-12-12 10:50:20  
+Finished: 2024-12-12 10:51:54
+
+------------------------------
+
+- [Lab 001: Create Security Group](#lab-001-create-security-group)
+  - [Requirements](#requirements)
+  - [Steps](#steps)
+  - [Resources](#resources)
+
+------------------------------
+
+## Requirements
+
+The Nautilus DevOps team is strategizing the migration of a portion of their infrastructure to the AWS cloud. Recognizing the scale of this undertaking, they have opted to approach the migration in incremental steps rather than as a single massive transition. To achieve this, they have segmented large tasks into smaller, more manageable units. This granular approach enables the team to execute the migration in gradual phases, ensuring smoother implementation and minimizing disruption to ongoing operations. By breaking down the migration into smaller tasks, the Nautilus DevOps team can systematically progress through each stage, allowing for better control, risk mitigation, and optimization of resources throughout the migration process.
+
+For this task, create a key pair with the following requirements:
+
+Name of the key pair should be xfusion-kp.
+
+Key pair type must be rsa
+
+------------------------------
+
+## Steps
+
+For the AWS credentials, enter ``` showcreds ``` command on aws-client host to retrieve the credentials. For further details, check out the [Project Nautilus documentation.](https://kodekloudhub.github.io/kodekloud-engineer/docs/projects/nautilus)
+
+To create a security group under the default VPC with the specified requirements using the AWS CLI, you can follow these steps:
+
+1) **Create the security group**:
+
+   ```sh
+      aws ec2 create-security-group --group-name xfusion-sg --description "Security group for Nautilus App Servers" --vpc-id $(aws ec2 describe-vpcs --query "Vpcs[?IsDefault==true].VpcId" --output text)
+      ```
+
+      This command creates a security group named `xfusion-sg` with the description "Security group for Nautilus App Servers" in the default VPC.
+
+2) **Get the Security Group ID** :
+
+   ```sh
+   SECURITY_GROUP_ID=$(aws ec2 describe-security-groups --filters Name=group-name,Values=xfusion-sg --query "SecurityGroups[0].GroupId" --output text)
+   ```
+
+   This command captures the security group ID of `xfusion-sg` into a variable for further use.
+
+3) **Add the inbound rule for HTTP (port 80)**:
+
+   ```sh
+   aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 80 --cidr 0.0.0.0/0
+   ```
+
+   This command adds an inbound rule to allow HTTP traffic on port 80 from any IP address.
+
+4) **Add the inbound rule for SSH (port 22)**:
+
+   ```sh
+   aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 22 --cidr 0.0.0.0/0
+   ```
+
+   This command adds an inbound rule to allow SSH traffic on port 22 from any IP address.
+
+By running these commands, you will have created a security group named `xfusion-sg` in the default VPC with the specified inbound rules. Make sure you have the AWS CLI configured with appropriate permissions to create and modify security groups.
+
+## Resources
+
+[AWS CLI Docs](https://aws.amazon.com/cli/)
+
+------------------------------
