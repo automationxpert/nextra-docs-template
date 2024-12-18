@@ -1,0 +1,47 @@
+# Lab 005: Allocate Elastic IP
+
+------------------------------
+
+Start|Finished
+---------|----------
+2024-12-14 09:50:20 | 2024-12-14 09:51:54
+
+------------------------------
+
+- [Lab 005: Allocate Elastic IP](#lab-005-allocate-elastic-ip)
+  - [Requirements](#requirements)
+  - [Steps](#steps)
+    - [Resources](#resources)
+
+------------------------------
+
+## Requirements
+
+The Nautilus DevOps team is strategizing the migration of a portion of their infrastructure to the AWS cloud. Recognizing the scale of this undertaking, they have opted to approach the migration in incremental steps rather than as a single massive transition. To achieve this, they have segmented large tasks into smaller, more manageable units. This granular approach enables the team to execute the migration in gradual phases, ensuring smoother implementation and minimizing disruption to ongoing operations. By breaking down the migration into smaller tasks, the Nautilus DevOps team can systematically progress through each stage, allowing for better control, risk mitigation, and optimization of resources throughout the migration process.
+
+For this task, allocate an Elastic IP address, name it as datacenter-eip.
+
+------------------------------
+
+## Steps
+
+For the AWS credentials, enter ``` showcreds ``` command on aws-client host to retrieve the credentials. For further details, check out the [Project Nautilus documentation.](https://kodekloudhub.github.io/kodekloud-engineer/docs/projects/nautilus)
+
+To Elastic IP with name datacenter-eip using the AWS CLI, you can follow these steps:
+
+```bash
+# Allocate Elastic IP and get the Allocation ID
+ALLOCATION_ID=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --output text)
+
+# Tag the Elastic IP with a name
+aws ec2 create-tags --resources $ALLOCATION_ID --tags Key=Name,Value=datacenter-eip
+
+echo "Elastic IP allocated and named as datacenter-eip."
+
+```
+
+### Resources
+
+[AWS CLI Docs](https://aws.amazon.com/cli/)
+
+------------------------------
