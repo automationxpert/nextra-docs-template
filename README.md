@@ -8,6 +8,8 @@ This is a template for creating documentation with [Nextra](https://nextra.site)
 
 ## Quick Start
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c395496e-8fa8-4a84-81be-8ddc51050baa/deploy-status)](https://app.netlify.com/sites/kke2/deploys)
+
 Click the button to clone this repository and deploy it on Vercel:
 
 [![](https://vercel.com/button)](https://vercel.com/new/clone?s=https%3A%2F%2Fgithub.com%2Fshuding%2Fnextra-docs-template&showOptionalTeamCreation=false)
