@@ -29,7 +29,7 @@ For the AWS credentials, enter ``` showcreds ``` command on aws-client host to r
 
 To Elastic IP with name datacenter-eip using the AWS CLI, you can follow these steps:
 
-```bash
+```bash filename="aws.sh" {3} copy
 # Allocate Elastic IP and get the Allocation ID
 ALLOCATION_ID=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --output text)
 
@@ -37,7 +37,6 @@ ALLOCATION_ID=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --o
 aws ec2 create-tags --resources $ALLOCATION_ID --tags Key=Name,Value=datacenter-eip
 
 echo "Elastic IP allocated and named as datacenter-eip."
-
 ```
 
 ### Resources
