@@ -22,7 +22,7 @@ Start|Finished
 
 ## Steps
 
-```bash
+```bash {3} copy
 # Set Variables for Resources
 RESOURCE_GROUP=$(az group list --query "[?contains(name, 'kml')].name" --output tsv)
 LOCATION="eastus"
