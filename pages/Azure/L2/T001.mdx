@@ -1,0 +1,112 @@
+# Lab 001: Assigning Public IP to Virtual Machines
+
+Start|Finished
+---------|----------
+2024-12-13 17:29:29 | 2024-12-13 17:54:14
+
+- [Lab 001: Assigning Public IP to Virtual Machines](#lab-001-assigning-public-ip-to-virtual-machines)
+  - [Requirements](#requirements)
+  - [Steps](#steps)
+  - [Resources](#resources)
+
+------------------------------
+
+## Requirements
+
+1) Create an Azure VM named devops-vm using any available Ubuntu image, with the VM size Standard_B1s.
+2) Generate an SSH public key on the azure-client host and associate it with the VM for SSH access.
+3) Associate a Static Public IP address named devops-pip with this VM.
+4) Ensure the VM is accessible via SSH using the generated public key.
+
+------------------------------
+
+## Steps
+
+```bash
+# Set Variables for Resources
+RESOURCE_GROUP=$(az group list --query "[?contains(name, 'kml')].name" --output tsv)
+LOCATION="eastus"
+VM_NAME="devops-vm"
+IMAGE="Ubuntu2404"
+SIZE="Standard_B1s"
+ADMIN_USERNAME="azureuser"
+PUBLIC_IP_NAME="devops-pip"
+SSH_KEY_PATH="$HOME/.ssh/id_rsa.pub"
+SSH_KEY=$(cat $SSH_KEY_PATH)
+
+# Generate SSH Key
+ssh-keygen -t rsa -b 2048 -f $HOME/.ssh/id_rsa -q -N ""
+
+# Create a Static Public IP Address:
+az network public-ip create \
+  --resource-group $RESOURCE_GROUP \
+  --name devops-pip \
+  --location eastus \
+  --sku Standard \
+  --allocation-method Static
+
+# Get the Static Public ip 
+az network public-ip show \
+  --resource-group $RESOURCE_GROUP \
+  --name devops-pip \
+  --query "{Name:name, Location:location, IPAddress:ipAddress}" \
+  --output table
+
+# Create the VM with speciifed details
+az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name $VM_NAME \
+  --image $IMAGE \
+  --size $SIZE \
+  --admin-username $ADMIN_USERNAME \
+  --ssh-key-values $SSH_KEY_PATH \
+  --nics $NIC_NAME \
+  --os-disk-size-gb 128 \
+  --location $LOCATION  \
+  --storage-sku Standard_LRS
+
+# get the VM details
+az vm show \
+  --resource-group kml_rg_main-143f9f02722d4cff \
+  --name devops-vm \
+  --query "networkProfile.networkInterfaces[0].id" \
+  --output tsv
+devops-vmVMNic
+
+# Remove the Assigned Public IP of the VM
+az network nic update \
+  --resource-group kml_rg_main-143f9f02722d4cff \
+  --name devops-vmVMNic \
+  --remove ipConfigurations[0].publicIpAddress
+
+#  Attach the Static Public IP to the VM
+az network nic ip-config update \
+  --resource-group kml_rg_main-143f9f02722d4cff \
+  --nic-name devops-vmVMNic \
+  --name ipconfigdevops-vm \
+  --public-ip-address devops-pip
+
+# Verify if the IP has been associated with VM
+az network nic show \
+  --resource-group kml_rg_main-143f9f02722d4cff \
+  --name devops-vmVMNic \
+  --query "ipConfigurations[0].publicIpAddress.id" \
+  --output tsv
+
+# Get the Static Public ip 
+az network public-ip show \
+  --resource-group kml_rg_main-143f9f02722d4cff \
+  --name devops-pip \
+  --query "ipAddress" \
+  --output tsv
+#172.178.67.151
+
+# Try ssh into the VM with the IP obtained before
+ssh azureuser@172.178.67.151
+```
+
+## Resources
+
+[Azure CLI Docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-cli)
+
+------------------------------
